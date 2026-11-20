@@ -1,0 +1,77 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f172a" />
+      <stop offset="50%" stop-color="#1e293b" />
+      <stop offset="100%" stop-color="#0b1120" />
+    </linearGradient>
+    <linearGradient id="blueGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3b82f6" />
+      <stop offset="100%" stop-color="#1d4ed8" />
+    </linearGradient>
+    <linearGradient id="redGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f43f5e" />
+      <stop offset="100%" stop-color="#be123c" />
+    </linearGradient>
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fbbf24" />
+      <stop offset="100%" stop-color="#d97706" />
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="125%" height="125%">
+      <feDropShadow dx="0" dy="12" stdDeviation="16" flood-color="#000000" flood-opacity="0.45" />
+    </filter>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="8" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+
+  <!-- iOS App Icon Squircle Background -->
+  <rect x="16" y="16" width="480" height="480" rx="108" fill="url(#bgGrad)" stroke="#334155" stroke-width="3" />
+
+  <!-- Subtle Accent Light Beam -->
+  <circle cx="120" cy="110" r="140" fill="#3b82f6" opacity="0.18" filter="url(#glow)" />
+  <circle cx="400" cy="390" r="130" fill="#f43f5e" opacity="0.14" filter="url(#glow)" />
+
+  <!-- Main Speech Bubble Shape -->
+  <g filter="url(#shadow)">
+    <!-- Main bubble card -->
+    <path d="M110 110 C110 82 132 60 160 60 L352 60 C380 60 402 82 402 110 L402 290 C402 318 380 340 352 340 L230 340 L160 395 L175 340 L160 340 C132 340 110 318 110 290 Z" 
+          fill="#1e293b" stroke="#475569" stroke-width="3.5" />
+  </g>
+
+  <!-- Slovak Mountain Peaks (Trojvršie) inside bubble -->
+  <!-- Middle Peak -->
+  <path d="M 220 285 C 235 250, 277 250, 292 285 Z" fill="url(#blueGrad)" />
+  <!-- Left Peak -->
+  <path d="M 185 285 C 197 260, 228 260, 240 285 Z" fill="url(#blueGrad)" opacity="0.9" />
+  <!-- Right Peak -->
+  <path d="M 272 285 C 284 260, 315 260, 327 285 Z" fill="url(#blueGrad)" opacity="0.9" />
+
+  <!-- Slovak Double Cross (Dvojkríž) in crisp white -->
+  <!-- Vertical stem -->
+  <rect x="250" y="125" width="12" height="135" rx="4" fill="#ffffff" filter="url(#shadow)" />
+  <!-- Upper horizontal arm -->
+  <rect x="232" y="152" width="48" height="11" rx="4" fill="#ffffff" filter="url(#shadow)" />
+  <!-- Lower horizontal arm -->
+  <rect x="220" y="184" width="72" height="12" rx="4" fill="#ffffff" filter="url(#shadow)" />
+
+  <!-- Sound / Voice Waves on the Right (Signifying Pronunciation / Speech) -->
+  <path d="M 330 150 C 355 175, 355 215, 330 240" fill="none" stroke="url(#goldGrad)" stroke-width="7" stroke-linecap="round" />
+  <path d="M 355 130 C 390 165, 390 225, 355 260" fill="none" stroke="url(#goldGrad)" stroke-width="6" stroke-linecap="round" opacity="0.85" />
+
+  <!-- Dual Flag Badges at the bottom -->
+  <g transform="translate(110, 415)">
+    <!-- Slovak pill -->
+    <rect x="0" y="0" width="135" height="42" rx="21" fill="#1e293b" stroke="#3b82f6" stroke-width="2" />
+    <text x="24" y="27" font-size="20">🇸🇰</text>
+    <text x="58" y="28" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-weight="700" font-size="16" fill="#f1f5f9">SLOVAK</text>
+  </g>
+
+  <g transform="translate(267, 415)">
+    <!-- English pill -->
+    <rect x="0" y="0" width="135" height="42" rx="21" fill="#1e293b" stroke="#f43f5e" stroke-width="2" />
+    <text x="24" y="27" font-size="20">🇬🇧</text>
+    <text x="58" y="28" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-weight="700" font-size="16" fill="#f1f5f9">ENGLISH</text>
+  </g>
+</svg>
