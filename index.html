@@ -7,6 +7,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Slovak Studio">
 <meta name="theme-color" content="#2563eb">
+<meta name="referrer" content="no-referrer">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icons/icon-180.png">
 <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon.png">
@@ -1042,39 +1043,132 @@
     return state.lang === "sk" ? "словацкий (slovenčina)" : "английский (English)";
   }
 
-  // Voices
+  // Voices & Audio Engine
   let allVoices = [];
+  let currentAudio = null;
+
   function populateVoices() {
-    if (!("speechSynthesis" in window)) return;
-    allVoices = window.speechSynthesis.getVoices();
     const sel = $("voiceSelect");
-    const prefix = state.lang === "sk" ? "sk" : "en";
-    const filtered = allVoices.filter((v) => v.lang.toLowerCase().startsWith(prefix));
-    sel.innerHTML = `<option value="">Системный голос (${state.lang === "sk" ? "sk-SK" : "en-US"})</option>`;
-    filtered.forEach((v) => {
-      const opt = document.createElement("option");
-      opt.value = v.name;
-      opt.textContent = `${v.name} (${v.lang})`;
-      sel.appendChild(opt);
-    });
+    const savedVoice = localStorage.getItem("yt_voice_" + state.lang) || "neural_studio";
+    sel.innerHTML = `
+      <option value="neural_studio">✨ Нейронный студийный (Google Neural · живая речь)</option>
+      <option value="system_auto">🤖 Системный офлайн (${state.lang === "sk" ? "Лаура sk-SK" : "Системный en-US"})</option>
+    `;
+
+    if ("speechSynthesis" in window) {
+      allVoices = window.speechSynthesis.getVoices();
+      const prefix = state.lang === "sk" ? "sk" : "en";
+      const filtered = allVoices.filter((v) => v.lang.toLowerCase().startsWith(prefix));
+      filtered.forEach((v) => {
+        const opt = document.createElement("option");
+        opt.value = v.name;
+        opt.textContent = `🍎 ${v.name} (${v.lang})`;
+        sel.appendChild(opt);
+      });
+    }
+
+    if ([...sel.options].some(o => o.value === savedVoice)) {
+      sel.value = savedVoice;
+    }
   }
+
   if ("speechSynthesis" in window) {
     populateVoices();
     window.speechSynthesis.onvoiceschanged = populateVoices;
   }
 
-  function speak(text) {
+  $("voiceSelect").addEventListener("change", (e) => {
+    localStorage.setItem("yt_voice_" + state.lang, e.target.value);
+  });
+
+  function stopAllSpeech() {
+    if (currentAudio) {
+      currentAudio.pause();
+      currentAudio.currentTime = 0;
+      currentAudio = null;
+    }
+    if ("speechSynthesis" in window) {
+      window.speechSynthesis.cancel();
+    }
+  }
+
+  function cleanTextForSpeech(raw) {
+    return raw
+      .replace(/\[.*?\]/g, "")
+      .replace(/\(.*?\)/g, "")
+      .replace(/https?:\/\/\S+/g, "")
+      .trim();
+  }
+
+  function speakSystem(cleanText, rate) {
     if (!("speechSynthesis" in window)) return;
     window.speechSynthesis.cancel();
-    const u = new SpeechSynthesisUtterance(text);
+    const u = new SpeechSynthesisUtterance(cleanText);
     u.lang = state.lang === "sk" ? "sk-SK" : "en-US";
-    u.rate = Number($("rateSelect").value || 0.92);
+    u.rate = rate;
     const chosen = $("voiceSelect").value;
-    if (chosen) {
+    if (chosen && chosen !== "system_auto" && chosen !== "neural_studio") {
       const v = allVoices.find((x) => x.name === chosen);
       if (v) u.voice = v;
     }
     window.speechSynthesis.speak(u);
+  }
+
+  function speak(rawText) {
+    stopAllSpeech();
+    const clean = cleanTextForSpeech(rawText);
+    if (!clean) return;
+
+    const chosenVoice = $("voiceSelect").value || "neural_studio";
+    const rate = Number($("rateSelect").value || 0.92);
+
+    // If user explicitly picked a system offline voice
+    if (chosenVoice !== "neural_studio") {
+      speakSystem(clean, rate);
+      return;
+    }
+
+    // Neural Studio TTS (Google Neural engine, no referer)
+    // Split into chunks if longer than 150 characters
+    const sentences = clean.match(/[^.!?]+[.!?]+|[^.!?]+$/g) || [clean];
+    const chunks = [];
+    let curr = "";
+    for (const s of sentences) {
+      const trimmed = s.trim();
+      if ((curr + " " + trimmed).trim().length <= 150) {
+        curr = (curr + " " + trimmed).trim();
+      } else {
+        if (curr) chunks.push(curr);
+        curr = trimmed;
+      }
+    }
+    if (curr) chunks.push(curr);
+
+    const langCode = state.lang === "sk" ? "sk" : "en";
+    let chunkIdx = 0;
+
+    function playNextChunk() {
+      if (chunkIdx >= chunks.length) {
+        currentAudio = null;
+        return;
+      }
+      const c = chunks[chunkIdx++];
+      const url = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(c)}&tl=${langCode}&client=tw-ob`;
+      
+      currentAudio = new Audio(url);
+      currentAudio.playbackRate = rate;
+      currentAudio.onended = playNextChunk;
+      currentAudio.onerror = () => {
+        // Smooth fallback to system offline voice if network is unavailable
+        speakSystem(clean, rate);
+      };
+
+      currentAudio.play().catch(() => {
+        speakSystem(clean, rate);
+      });
+    }
+
+    playNextChunk();
   }
 
   // Render language-dependent UI
