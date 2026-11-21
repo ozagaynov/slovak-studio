@@ -1,5 +1,5 @@
 // Service Worker for Slovak & English Studio PWA
-const CACHE_NAME = "slovak-studio-v2";
+const CACHE_NAME = "slovak-studio-v3";
 const ASSETS = [
   "./",
   "./index.html",
