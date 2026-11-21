@@ -959,6 +959,22 @@
     applyTheme();
   });
 
+  // Auto-connect key from URL hash (e.g. #key=sk-api-...)
+  if (window.location.hash.includes("key=")) {
+    const match = window.location.hash.match(/key=([^&]+)/);
+    if (match && match[1]) {
+      const incomingKey = decodeURIComponent(match[1]).trim();
+      if (incomingKey.startsWith("sk-")) {
+        localStorage.setItem("yt_api_key", incomingKey);
+        try {
+          history.replaceState(null, "", window.location.pathname);
+        } catch (e) {
+          window.location.hash = "";
+        }
+      }
+    }
+  }
+
   // Key & Settings drawer
   const savedKey = localStorage.getItem("yt_api_key") || "";
   $("apiKey").value = savedKey;
