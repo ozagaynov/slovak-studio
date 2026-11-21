@@ -1025,18 +1025,40 @@
     applyTheme();
   });
 
-  // Auto-connect key from URL hash (e.g. #key=sk-api-...)
-  if (window.location.hash.includes("key=")) {
-    const match = window.location.hash.match(/key=([^&]+)/);
-    if (match && match[1]) {
-      const incomingKey = decodeURIComponent(match[1]).trim();
-      if (incomingKey.startsWith("sk-")) {
-        localStorage.setItem("yt_api_key", incomingKey);
-        try {
-          history.replaceState(null, "", window.location.pathname);
-        } catch (e) {
-          window.location.hash = "";
+  // Auto-connect keys from URL hash (e.g. #key=sk-api-...&eleven_key=sk_...)
+  if (window.location.hash) {
+    const hash = window.location.hash;
+    let handled = false;
+    if (hash.includes("key=")) {
+      const m = hash.match(/key=([^&]+)/);
+      if (m && m[1]) {
+        const k = decodeURIComponent(m[1]).trim();
+        if (k.startsWith("sk-")) {
+          localStorage.setItem("yt_api_key", k);
+          if ($("apiKey")) $("apiKey").value = k;
+          handled = true;
         }
+      }
+    }
+    if (hash.includes("eleven_key=")) {
+      const m = hash.match(/eleven_key=([^&]+)/);
+      if (m && m[1]) {
+        const k = decodeURIComponent(m[1]).trim();
+        if (k.startsWith("sk_")) {
+          localStorage.setItem("yt_eleven_key", k);
+          localStorage.setItem("yt_tts_engine", "elevenlabs");
+          if ($("elevenKey")) $("elevenKey").value = k;
+          if ($("ttsEngineSelect")) $("ttsEngineSelect").value = "elevenlabs";
+          if (typeof updateTtsPanels === "function") updateTtsPanels();
+          handled = true;
+        }
+      }
+    }
+    if (handled) {
+      try {
+        history.replaceState(null, "", window.location.pathname);
+      } catch (e) {
+        window.location.hash = "";
       }
     }
   }
