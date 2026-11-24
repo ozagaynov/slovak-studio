@@ -8,7 +8,7 @@ const STORE_NAME = "kv";
 const DEFAULT_ELEVEN_KEY = atob("c2tfNjI4ZTg3YTczOGQ1YjM4MzRjOGIyMjM3Yjc2ZjBlNTljMzc5ZTQ1MmE5NDFlMTMy");
 const DEFAULT_VOICE_ID = "pNInz6obpgDQGcFmaJgB"; // Adam (ElevenLabs Multilingual v2)
 const DEFAULT_AI_KEY = atob("c2stYXBpLTkyNThiYjcxYjE4M2EwMDVjMTczMGY5ZDUxZWI5ZGI4ZjM1YWI5OGE1ODYzYjA1N2VlZmNlY2QwNzVkNjlhMTY=");
-const DEFAULT_AI_URL = "https://api.aidostup.site/v1";
+const DEFAULT_AI_URL = "https://aidostup.site/v1";
 const DEFAULT_AI_MODEL = "gemini-3.8-flash";
 
 const DEFAULT_SETTINGS = {
@@ -105,9 +105,9 @@ export async function getSettings() {
   const saved = await kvGet("settings", {});
   const s = { ...DEFAULT_SETTINGS, ...(saved || {}) };
 
-  // Автоматическое исправление Mixed Content при работе по HTTPS (GitHub Pages)
+  // Автоматическое исправление Mixed Content и устаревшего поддомена при работе по HTTPS (GitHub Pages)
   if (typeof location !== "undefined" && location.protocol === "https:") {
-    if (!s.aiBaseUrl || s.aiBaseUrl.startsWith("http:")) {
+    if (!s.aiBaseUrl || s.aiBaseUrl.startsWith("http:") || s.aiBaseUrl.includes("api.aidostup.site")) {
       s.aiBaseUrl = DEFAULT_AI_URL;
     }
   }
