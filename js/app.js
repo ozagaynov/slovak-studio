@@ -205,6 +205,21 @@ async function rateFluencyCard(ratingNum) {
 }
 
 // --- LUTE-STYLE READER ---
+async function translateLive(word, lang = "sk") {
+  try {
+    const sl = lang === "en" ? "en" : "sk";
+    const res = await fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=${sl}&tl=ru&dt=t&q=${encodeURIComponent(word)}`);
+    if (res.ok) {
+      const data = await res.json();
+      const tr = data?.[0]?.[0]?.[0];
+      if (tr) return tr.trim();
+    }
+  } catch (e) {
+    console.warn("Live translation error:", e);
+  }
+  return null;
+}
+
 function getLangTexts() {
   const matched = appState.texts.filter((t) => t.lang === appState.lang);
   return matched.length ? matched : appState.texts;
@@ -262,20 +277,34 @@ function renderReader() {
       span.classList.add("gloss");
     }
 
-    span.addEventListener("click", () => {
+    span.addEventListener("click", async () => {
       unlockAudio();
-      const translation = deckMatch ? deckMatch.trans : glossMatch || "Нажмите «+ В FSRS», чтобы сохранить слово для изучения";
+      const currentWord = clean || tok;
+      let translation = deckMatch ? deckMatch.trans : (glossMatch || null);
+
+      $("readerPopupWord").textContent = deckMatch ? deckMatch.word : currentWord;
+      $("readerPopupTrans").textContent = translation || "Перевожу...";
+      $("readerPopup").style.display = "flex";
+      speakText(currentWord, appState.settings, appState.lang);
+
+      if (!translation) {
+        translation = await translateLive(currentWord, appState.lang);
+        if (translation) {
+          if (!current.glossary) current.glossary = {};
+          current.glossary[currentWord] = translation;
+          $("readerPopupTrans").textContent = translation;
+        } else {
+          $("readerPopupTrans").textContent = currentWord;
+        }
+      }
+
       appState.selectedReaderWord = {
-        word: clean || tok,
-        trans: translation,
+        word: currentWord,
+        trans: translation || currentWord,
         ex: current.text.slice(0, 140),
         ex_tr: current.translation.slice(0, 140),
         deckMatch
       };
-      $("readerPopupWord").textContent = deckMatch ? deckMatch.word : clean || tok;
-      $("readerPopupTrans").textContent = translation;
-      $("readerPopup").style.display = "flex";
-      speakText(clean || tok, appState.settings, appState.lang);
     });
 
     box.appendChild(span);
