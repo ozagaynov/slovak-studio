@@ -175,21 +175,72 @@ export async function speakText(rawText, settings, lang = "sk") {
   speakSystem(clean, lang, rate);
 }
 
-export function startVoiceInput({ lang = "sk", onResult, onError }) {
+let activeRecognition = null;
+
+export function isVoiceInputActive() {
+  return activeRecognition !== null;
+}
+
+export function toggleVoiceInput({ lang = "sk", onStart, onResult, onEnd, onError }) {
+  if (activeRecognition) {
+    try {
+      activeRecognition.stop();
+    } catch {}
+    activeRecognition = null;
+    onEnd?.();
+    return;
+  }
+
   const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
   if (!SR) {
-    onError?.("Голосовой ввод не поддерживается этим браузером. Используйте диктовку на клавиатуре iPhone.");
-    return null;
+    onError?.("Голосовой ввод не поддерживается этим браузером. Нажмите на значок микрофона на клавиатуре iPhone/Mac для нативной диктовки.");
+    return;
   }
-  const rec = new SR();
-  rec.lang = lang === "en" ? "en-US" : "sk-SK";
-  rec.interimResults = false;
-  rec.maxAlternatives = 1;
-  rec.onresult = (e) => {
-    const transcript = e.results?.[0]?.[0]?.transcript || "";
-    if (transcript) onResult?.(transcript);
-  };
-  rec.onerror = (e) => onError?.(`Ошибка распознавания: ${e.error}`);
-  rec.start();
-  return rec;
+
+  try {
+    const rec = new SR();
+    rec.lang = lang === "en" ? "en-US" : "sk-SK";
+    rec.interimResults = false;
+    rec.maxAlternatives = 1;
+    rec.continuous = false;
+
+    rec.onstart = () => {
+      activeRecognition = rec;
+      onStart?.();
+    };
+
+    rec.onresult = (e) => {
+      const transcript = e.results?.[0]?.[0]?.transcript || "";
+      if (transcript) onResult?.(transcript);
+    };
+
+    rec.onerror = (e) => {
+      // Игнорируем штатные прерывания и тишину без показа предупреждений
+      if (e.error === "aborted" || e.error === "no-speech") {
+        return;
+      }
+      if (e.error === "not-allowed") {
+        onError?.("Доступ к микрофону заблокирован. Разрешите микрофон в настройках браузера или используйте диктовку с клавиатуры.");
+        return;
+      }
+      onError?.(`Микрофон: ${e.error}`);
+    };
+
+    rec.onend = () => {
+      activeRecognition = null;
+      onEnd?.();
+    };
+
+    rec.start();
+  } catch (err) {
+    activeRecognition = null;
+    onEnd?.();
+    if (err.name !== "InvalidStateError") {
+      onError?.(err.message);
+    }
+  }
+}
+
+export function startVoiceInput(opts) {
+  return toggleVoiceInput(opts);
 }

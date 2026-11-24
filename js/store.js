@@ -93,9 +93,25 @@ export async function setActiveLang(lang) {
   await kvSet("active_lang", lang);
 }
 
+export async function getSavedTheme() {
+  return (await kvGet("app_theme", "cupertino")) || "cupertino";
+}
+
+export async function saveTheme(theme) {
+  await kvSet("app_theme", theme);
+}
+
 export async function getSettings() {
   const saved = await kvGet("settings", {});
   const s = { ...DEFAULT_SETTINGS, ...(saved || {}) };
+
+  // Автоматическое исправление Mixed Content при работе по HTTPS (GitHub Pages)
+  if (typeof location !== "undefined" && location.protocol === "https:") {
+    if (!s.aiBaseUrl || s.aiBaseUrl.startsWith("http:")) {
+      s.aiBaseUrl = DEFAULT_AI_URL;
+    }
+  }
+
   if (!s.elevenKey) s.elevenKey = DEFAULT_ELEVEN_KEY;
   if (!s.elevenVoiceId) s.elevenVoiceId = DEFAULT_VOICE_ID;
   if (!s.aiKey) s.aiKey = DEFAULT_AI_KEY;

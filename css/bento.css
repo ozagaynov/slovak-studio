@@ -1,68 +1,118 @@
-:root {
-  --bg: #F5F5F7;
+/* ==========================================================================
+   SLOVAK & ENGLISH STUDIO — APPLE BENTO THEMES
+   1. 🍏 Apple Cupertino (Светлый чистый Apple)
+   2. 🌅 Apple Sunset (Тёплый солнечный / Playful Warm)
+   3. 🌙 Apple Midnight Pro (Тёмный космический сланец с неоном)
+   ========================================================================== */
+
+/* --- THEME 1: 🍏 APPLE CUPERTINO (Дефолтный светлый Apple) --- */
+:root, body[data-theme="cupertino"], body:not([data-theme]) {
+  --bg: #F2F2F7;
   --card: #FFFFFF;
-  --card-border: rgba(0, 0, 0, 0.06);
-  --card-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.04);
-  --text: #1D1D1F;
-  --text-muted: #86868B;
-  --text-secondary: #515154;
+  --card-border: rgba(0, 0, 0, 0.08);
+  --card-shadow: 0 4px 24px -2px rgba(0, 0, 0, 0.06);
+  --text: #1C1C1E;
+  --text-muted: #8E8E93;
+  --text-secondary: #3A3A3C;
 
-  --pastel-mint: #EAF7EE;
-  --pastel-mint-border: #C8E6C9;
-  --pastel-mint-text: #1B5E20;
+  --accent-primary: #0071E3;
+  --accent-primary-hover: #0077ED;
+  --accent-text: #FFFFFF;
 
-  --pastel-blue: #EBF5FF;
-  --pastel-blue-border: #BBDEFB;
-  --pastel-blue-text: #0D47A1;
+  --pastel-mint: #E8F5E9;
+  --pastel-mint-border: #A5D6A7;
+  --pastel-mint-text: #2E7D32;
 
-  --pastel-lavender: #F3E8FF;
-  --pastel-lavender-border: #E1BEE7;
-  --pastel-lavender-text: #4A148C;
+  --pastel-blue: #E3F2FD;
+  --pastel-blue-border: #90CAF9;
+  --pastel-blue-text: #1565C0;
 
-  --pastel-peach: #FFF0E6;
-  --pastel-peach-border: #FFCCBC;
-  --pastel-peach-text: #BF360C;
+  --pastel-lavender: #F3E5F5;
+  --pastel-lavender-border: #CE93D8;
+  --pastel-lavender-text: #6A1B9A;
 
-  --pastel-coral: #FEE2E2;
-  --pastel-coral-border: #FECACA;
-  --pastel-coral-text: #991B1B;
+  --pastel-peach: #FFF3E0;
+  --pastel-peach-border: #FFCC80;
+  --pastel-peach-text: #E65100;
 
-  --radius-bento: 20px;
+  --pastel-coral: #FFEBEE;
+  --pastel-coral-border: #FFCDD2;
+  --pastel-coral-text: #C62828;
+
+  --radius-bento: 24px;
   --radius-pill: 9999px;
-  --radius-sm: 12px;
+  --radius-sm: 14px;
   --font-stack: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", sans-serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #0D0E12;
-    --card: #16171D;
-    --card-border: rgba(255, 255, 255, 0.08);
-    --card-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.4);
-    --text: #F5F5F7;
-    --text-muted: #9E9EA7;
-    --text-secondary: #C7C7CC;
+/* --- THEME 2: 🌅 APPLE SUNSET (Тёплый солнечный) --- */
+body[data-theme="sunset"] {
+  --bg: #FBF8F3;
+  --card: #FFFFFF;
+  --card-border: rgba(220, 140, 80, 0.16);
+  --card-shadow: 0 8px 30px rgba(210, 130, 60, 0.08);
+  --text: #2B241E;
+  --text-muted: #8E8276;
+  --text-secondary: #594B3F;
 
-    --pastel-mint: rgba(52, 199, 89, 0.16);
-    --pastel-mint-border: rgba(52, 199, 89, 0.34);
-    --pastel-mint-text: #4ADE80;
+  --accent-primary: #FA541C;
+  --accent-primary-hover: #FF7A45;
+  --accent-text: #FFFFFF;
 
-    --pastel-blue: rgba(0, 122, 255, 0.16);
-    --pastel-blue-border: rgba(0, 122, 255, 0.34);
-    --pastel-blue-text: #60A5FA;
+  --pastel-mint: #E6F7F0;
+  --pastel-mint-border: #80DFB6;
+  --pastel-mint-text: #0D8253;
 
-    --pastel-lavender: rgba(175, 82, 222, 0.16);
-    --pastel-lavender-border: rgba(175, 82, 222, 0.34);
-    --pastel-lavender-text: #C084FC;
+  --pastel-blue: #E8F4FD;
+  --pastel-blue-border: #99D1F9;
+  --pastel-blue-text: #1877C9;
 
-    --pastel-peach: rgba(255, 149, 0, 0.16);
-    --pastel-peach-border: rgba(255, 149, 0, 0.34);
-    --pastel-peach-text: #FB923C;
+  --pastel-lavender: #F5EDFA;
+  --pastel-lavender-border: #D8B7EE;
+  --pastel-lavender-text: #7332A6;
 
-    --pastel-coral: rgba(255, 59, 48, 0.16);
-    --pastel-coral-border: rgba(255, 59, 48, 0.34);
-    --pastel-coral-text: #F87171;
-  }
+  --pastel-peach: #FFF2E8;
+  --pastel-peach-border: #FFBB96;
+  --pastel-peach-text: #D4380D;
+
+  --pastel-coral: #FFF0F0;
+  --pastel-coral-border: #FFA39E;
+  --pastel-coral-text: #CF1322;
+}
+
+/* --- THEME 3: 🌙 APPLE MIDNIGHT PRO (Тёмный космический сланец с неоном) --- */
+body[data-theme="midnight"] {
+  --bg: #0F1218;
+  --card: #181C24;
+  --card-border: rgba(255, 255, 255, 0.1);
+  --card-shadow: 0 8px 32px rgba(0, 0, 0, 0.55);
+  --text: #F3F4F6;
+  --text-muted: #9CA3AF;
+  --text-secondary: #D1D5DB;
+
+  --accent-primary: #3B82F6;
+  --accent-primary-hover: #60A5FA;
+  --accent-text: #FFFFFF;
+
+  --pastel-mint: rgba(46, 213, 115, 0.18);
+  --pastel-mint-border: rgba(46, 213, 115, 0.4);
+  --pastel-mint-text: #2ED573;
+
+  --pastel-blue: rgba(10, 132, 255, 0.18);
+  --pastel-blue-border: rgba(10, 132, 255, 0.4);
+  --pastel-blue-text: #60A5FA;
+
+  --pastel-lavender: rgba(191, 90, 242, 0.18);
+  --pastel-lavender-border: rgba(191, 90, 242, 0.4);
+  --pastel-lavender-text: #D8B4FE;
+
+  --pastel-peach: rgba(255, 159, 10, 0.18);
+  --pastel-peach-border: rgba(255, 159, 10, 0.4);
+  --pastel-peach-text: #FBBF24;
+
+  --pastel-coral: rgba(255, 69, 58, 0.18);
+  --pastel-coral-border: rgba(255, 69, 58, 0.4);
+  --pastel-coral-text: #F87171;
 }
 
 * {
@@ -214,9 +264,10 @@ body {
 }
 
 .nav-tab.active {
-  background: var(--text);
-  color: var(--bg);
-  border-color: var(--text);
+  background: var(--accent-primary, #0071E3);
+  color: #FFFFFF;
+  border-color: var(--accent-primary, #0071E3);
+  box-shadow: 0 4px 14px rgba(0, 113, 227, 0.28);
 }
 
 @media (max-width: 720px) {
@@ -464,9 +515,14 @@ body {
 .bento-btn:active { transform: scale(0.97); }
 
 .bento-btn-primary {
-  background: var(--pastel-blue);
-  border-color: var(--pastel-blue-border);
-  color: var(--pastel-blue-text);
+  background: var(--accent-primary, #0071E3);
+  border-color: var(--accent-primary, #0071E3);
+  color: #FFFFFF;
+  box-shadow: 0 4px 14px rgba(0, 113, 227, 0.25);
+}
+
+.bento-btn-primary:hover {
+  background: var(--accent-primary-hover, #0077ED);
 }
 
 .srs-grid {

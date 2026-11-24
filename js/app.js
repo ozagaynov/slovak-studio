@@ -14,7 +14,9 @@ import {
   getProfileStats,
   bumpProfileActivity,
   exportAllData,
-  importAllData
+  importAllData,
+  getSavedTheme,
+  saveTheme
 } from "./store.js";
 import {
   scheduleCard,
@@ -24,9 +26,10 @@ import {
   buildFluencyQueue,
   getHardWords
 } from "./srs.js";
-import { speakText, unlockAudio, startVoiceInput } from "./audio.js";
+import { speakText, unlockAudio, toggleVoiceInput } from "./audio.js";
 import { runDialogueTurn, checkPhrase } from "./ai.js";
 import { attachCardSwipe, triggerHaptic } from "./gestures.js";
+import { TEXTS_DATA } from "./texts_data.js";
 
 const $ = (id) => document.getElementById(id);
 
@@ -65,6 +68,28 @@ function updateVoiceBadge() {
     system: `🍎 Apple (${appState.lang.toUpperCase()})`
   };
   $("voiceStatusLabel").textContent = labels[appState.settings.voiceEngine] || labels.elevenlabs;
+}
+
+const THEMES = [
+  { id: "cupertino", label: "🍏 Cupertino" },
+  { id: "sunset", label: "🌅 Sunset" },
+  { id: "midnight", label: "🌙 Midnight" }
+];
+
+async function applyTheme(themeId) {
+  const valid = THEMES.some((t) => t.id === themeId) ? themeId : "cupertino";
+  document.body.dataset.theme = valid;
+  const th = THEMES.find((t) => t.id === valid) || THEMES[0];
+  const btn = $("themeToggleBtn");
+  if (btn) btn.textContent = th.label;
+  await saveTheme(valid);
+}
+
+async function cycleTheme() {
+  const current = document.body.dataset.theme || "cupertino";
+  const idx = THEMES.findIndex((t) => t.id === current);
+  const next = THEMES[(idx + 1) % THEMES.length].id;
+  await applyTheme(next);
 }
 
 async function refreshHeaderStats() {
@@ -539,20 +564,27 @@ async function init() {
     });
   }
 
-  const [skRes, enRes, scenRes, textsRes] = await Promise.all([
+  const [skRes, enRes, scenRes] = await Promise.all([
     fetch("./data/vocab-sk.json"),
     fetch("./data/vocab-en.json"),
-    fetch("./data/scenarios.json"),
-    fetch("./data/texts.json")
+    fetch("./data/scenarios.json")
   ]);
   appState.decks.sk = await skRes.json();
   appState.decks.en = await enRes.json();
   appState.scenarios = await scenRes.json();
-  appState.texts = await textsRes.json();
+  appState.texts = (Array.isArray(TEXTS_DATA) && TEXTS_DATA.length) ? TEXTS_DATA : [];
 
   appState.settings = await getSettings();
   appState.profile = await getActiveProfile();
   appState.lang = await getActiveLang();
+
+  // Инициализация темы оформления Apple
+  const savedTheme = await getSavedTheme();
+  await applyTheme(savedTheme);
+  const themeBtn = $("themeToggleBtn");
+  if (themeBtn) {
+    themeBtn.addEventListener("click", cycleTheme);
+  }
 
   document.querySelectorAll("#profilePillGroup .pill-btn").forEach((b) => {
     b.classList.toggle("active", b.dataset.profile === appState.profile);
@@ -721,10 +753,29 @@ async function init() {
     $("dialogInput").value = sc.hints[Math.floor(Math.random() * sc.hints.length)];
   });
   $("dialogMicBtn").addEventListener("click", () => {
-    startVoiceInput({
+    toggleVoiceInput({
       lang: appState.lang,
-      onResult: (text) => { $("dialogInput").value = text; },
-      onError: (msg) => alert(msg)
+      onStart: () => {
+        $("dialogMicBtn").textContent = "🔴";
+        $("dialogMicBtn").style.borderColor = "var(--pastel-coral-border)";
+        $("dialogInput").placeholder = "Слушаю... Говорите на " + (appState.lang === "en" ? "английском" : "словацком");
+      },
+      onResult: (text) => {
+        $("dialogInput").value = text;
+      },
+      onEnd: () => {
+        $("dialogMicBtn").textContent = "🎙";
+        $("dialogMicBtn").style.borderColor = "";
+        $("dialogInput").placeholder = "Ответьте на изучаемом языке...";
+      },
+      onError: (msg) => {
+        console.warn(msg);
+        const errDiv = document.createElement("div");
+        errDiv.className = "error-box";
+        errDiv.textContent = msg;
+        $("dialogMessages").appendChild(errDiv);
+        $("dialogMessages").scrollTop = $("dialogMessages").scrollHeight;
+      }
     });
   });
 
