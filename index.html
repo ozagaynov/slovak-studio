@@ -11,7 +11,7 @@
   <title>Slovak & English Studio v3 — Four Strands PWA</title>
   <script>
     // Automatic cache invalidation on version upgrade
-    const APP_VERSION = "3.2.0";
+    const APP_VERSION = "3.2.1";
     if (localStorage.getItem("slovak_studio_ver") !== APP_VERSION) {
       if ("caches" in window) {
         caches.keys().then((names) => names.forEach((n) => {
@@ -24,7 +24,7 @@
   <link rel="manifest" href="./manifest.json">
   <link rel="apple-touch-icon" href="./icons/icon-180.png">
   <link rel="icon" type="image/png" href="./icons/favicon.png">
-  <link rel="stylesheet" href="./css/bento.css?v=3.2.0">
+  <link rel="stylesheet" href="./css/bento.css?v=3.2.1">
 </head>
 <body data-theme="cupertino">
 
@@ -354,6 +354,6 @@
   </div>
 </div>
 
-<script type="module" src="./js/app.js?v=3.2.0"></script>
+<script type="module" src="./js/app.js?v=3.2.1"></script>
 </body>
 </html>

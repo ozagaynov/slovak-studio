@@ -1,5 +1,5 @@
 // Service Worker for Slovak & English Studio v3.2 (Four Strands PWA)
-const CACHE_NAME = "slovak-studio-v12";
+const CACHE_NAME = "slovak-studio-v13";
 const ASSETS = [
   "./",
   "./index.html",

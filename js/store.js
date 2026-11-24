@@ -117,7 +117,7 @@ export async function getSettings() {
   if (!s.aiKey) s.aiKey = DEFAULT_AI_KEY;
   if (!s.aiBaseUrl) s.aiBaseUrl = DEFAULT_AI_URL;
   if (!s.aiModel || s.aiModel === "gemma3:12b") s.aiModel = DEFAULT_AI_MODEL;
-  if (!s.voiceEngine || s.voiceEngine === "system") s.voiceEngine = "elevenlabs";
+  if (!s.voiceEngine) s.voiceEngine = "elevenlabs";
   return s;
 }
 
